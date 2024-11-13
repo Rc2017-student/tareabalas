@@ -1,0 +1,66 @@
+[gd_scene load_steps=10 format=3 uid="uid://csqk17yongkw5"]
+
+[ext_resource type="Script" path="res://villano/villano.gd" id="1_qc4ad"]
+[ext_resource type="Texture2D" uid="uid://betyhwjnqnx8l" path="res://villano/Gunner_Red_Idle.png" id="2_vu6b1"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_l04yi"]
+radius = 120.0
+height = 370.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0dwx7"]
+atlas = ExtResource("2_vu6b1")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uhni2"]
+atlas = ExtResource("2_vu6b1")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_341xx"]
+atlas = ExtResource("2_vu6b1")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nvebl"]
+atlas = ExtResource("2_vu6b1")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ucbt0"]
+atlas = ExtResource("2_vu6b1")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3g5ll"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0dwx7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uhni2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_341xx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nvebl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ucbt0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Villano" type="CharacterBody2D"]
+scale = Vector2(0.2, 0.2)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_qc4ad")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-4.76837e-07, -5.00001)
+shape = SubResource("CapsuleShape2D_l04yi")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -5)
+scale = Vector2(9.57292, 9.57292)
+sprite_frames = SubResource("SpriteFrames_3g5ll")

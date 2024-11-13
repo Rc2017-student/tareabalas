@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://bmoqhvoby6cja"]
+
+[ext_resource type="Script" path="res://balafuego.gd" id="1_dft00"]
+[ext_resource type="Texture2D" uid="uid://djb8yq3umbqw1" path="res://villano/misil-removebg-preview.png" id="2_vej2p"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_65h1r"]
+size = Vector2(253.5, 55)
+
+[node name="Balafuego" type="Area2D"]
+scale = Vector2(0.5, 0.5)
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_dft00")
+
+[node name="balafuego" type="Sprite2D" parent="."]
+position = Vector2(8, -2)
+scale = Vector2(0.514852, 0.514852)
+texture = ExtResource("2_vej2p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(2.5, 2.5)
+shape = SubResource("RectangleShape2D_65h1r")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
