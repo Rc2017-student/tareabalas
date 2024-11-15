@@ -1,17 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://binydj3ms1rko"]
+[gd_scene load_steps=12 format=3 uid="uid://binydj3ms1rko"]
 
 [ext_resource type="PackedScene" uid="uid://biwvrbvxxj8y6" path="res://personaje.tscn" id="1_wa2c5"]
 [ext_resource type="Texture2D" uid="uid://ujq7x1c6newg" path="res://assets/sheet.png" id="2_cdk7j"]
 [ext_resource type="PackedScene" uid="uid://csqk17yongkw5" path="res://villano/villano.tscn" id="3_m885d"]
 [ext_resource type="Script" path="res://Area2D.gd" id="4_jbmma"]
 [ext_resource type="Texture2D" uid="uid://cd3tx60m2wf68" path="res://villano/hevy.jpg" id="5_a4i7k"]
+[ext_resource type="Script" path="res://saveopoint.gd" id="6_djdy0"]
+[ext_resource type="Texture2D" uid="uid://dhoo7c0c2x8t" path="res://villano/savepint.png" id="6_poqqn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3ikno"]
 texture = ExtResource("2_cdk7j")
 texture_region_size = Vector2i(70, 70)
 0:0/next_alternative_id = 2
 0:0/0 = 0
-0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-35, -35, 35, -35, 35, 5, -35, 5, -35, 0)
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-35, -35, 35, -35, 35, 35, -35, 35)
 1:0/0 = 0
 2:0/0 = 0
 3:0/0 = 0
@@ -682,18 +684,32 @@ sources/0 = SubResource("TileSetAtlasSource_3ikno")
 [sub_resource type="CircleShape2D" id="CircleShape2D_q7rn7"]
 radius = 14.0357
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nfglu"]
+size = Vector2(26, 44)
+
 [node name="Principal" type="Node2D"]
 
 [node name="Personaje" parent="." instance=ExtResource("1_wa2c5")]
 position = Vector2(166, 121)
 
+[node name="Camera2D" type="Camera2D" parent="Personaje"]
+
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_76k2j")
 format = 2
-layer_0/tile_data = PackedInt32Array(262146, 0, 0, 262147, 0, 0, 262148, 0, 0, 262149, 0, 0, 262150, 0, 0)
+layer_0/tile_data = PackedInt32Array(262146, 0, 0, 262147, 0, 0, 262148, 0, 0, 262149, 0, 0, 262150, 0, 0, 262151, 0, 0, 262152, 0, 0, 262153, 0, 0, 262154, 0, 0, 262155, 0, 0, 262156, 0, 0, 262157, 0, 0, 262158, 0, 0, 262159, 0, 0, 262160, 0, 0, 262161, 0, 0, 262162, 0, 0, 262163, 0, 0, 262164, 0, 0, 262165, 0, 0, 262166, 0, 0, 262167, 0, 0, 262168, 0, 0, 262169, 0, 0, 262170, 0, 0, 262171, 0, 0, 262172, 0, 0, 262173, 0, 0, 262174, 0, 0, 262175, 0, 0, 262176, 0, 0, 262177, 0, 0, 262145, 0, 0, 262144, 0, 0, 327679, 0, 0, 327678, 0, 0, 327677, 0, 0, 327676, 0, 0, 327675, 0, 0, 327674, 0, 0, 327673, 0, 0, 327672, 0, 0, 327671, 0, 0, 327670, 0, 0, 327669, 0, 0, 327668, 0, 0, 327667, 0, 0, 327666, 0, 0, 327665, 0, 0, 327664, 0, 0, 327663, 0, 0)
 
 [node name="Villano" parent="." instance=ExtResource("3_m885d")]
-position = Vector2(417, 234)
+position = Vector2(1134, 181)
+
+[node name="Villano2" parent="." instance=ExtResource("3_m885d")]
+position = Vector2(1484, 85)
+
+[node name="Villano3" parent="." instance=ExtResource("3_m885d")]
+position = Vector2(-935, 156)
+
+[node name="Villano4" parent="." instance=ExtResource("3_m885d")]
+position = Vector2(675, 95)
 
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2(281, 245)
@@ -707,4 +723,17 @@ position = Vector2(2.86102e-06, 6.67572e-06)
 scale = Vector2(0.0836632, 0.0848936)
 texture = ExtResource("5_a4i7k")
 
+[node name="Area2D2" type="Area2D" parent="."]
+script = ExtResource("6_djdy0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2"]
+position = Vector2(1725, 256)
+shape = SubResource("RectangleShape2D_nfglu")
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D2"]
+position = Vector2(1725, 251)
+scale = Vector2(0.0453333, 0.0453333)
+texture = ExtResource("6_poqqn")
+
 [connection signal="body_entered" from="Area2D" to="Area2D" method="_on_body_entered"]
+[connection signal="body_entered" from="Area2D2" to="Area2D2" method="_on_body_entered"]

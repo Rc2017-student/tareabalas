@@ -1,66 +1,99 @@
 extends CharacterBody2D
 
 # Constantes
-const SPEED = 300.0  # Velocidad horizontal del personaje
-const JUMP_VELOCITY = -550.0  # Velocidad del salto (negativa porque va hacia arriba)
-const STAND_TO_IDLE_DELAY = 0.5  # Tiempo antes de pasar de "stand" a "idle"
-const DUCK_DURATION = 0.2  # Duración de la animación "duck" al aterrizar después de un salto o caída
+const SPEED = 300.0
+const JUMP_VELOCITY = -550.0
+const STAND_TO_IDLE_DELAY = 0.5
+const DUCK_DURATION = 0.2
 
+# Ruta para guardar el archivo
+var ruta: String = "user://game_data.dat"
+
+# Diccionario de datos predeterminado
+var Datos: Dictionary = {
+	"position": [200, 200]  # Posición inicial predeterminada
+}
 
 # Referencias a nodos
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D  # Referencia al sprite animado del personaje
-@onready var HieloBalaScene1 = preload("res://hielo.tscn")  # Carga de la escena de la bala de hielo
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var HieloBalaScene1 = preload("res://hielo.tscn")
 @onready var FuegoBalaScene = preload("res://balafuego.tscn")
 @onready var timer = $Timer
+
 # Variables de estado
-var stand_timer = 0.0  # Temporizador para cambiar de "stand" a "idle"
-var duck_timer = 0.0  # Temporizador para controlar la duración de la animación "duck"
-var was_in_air = false  # Indica si el personaje estaba en el aire (por salto o caída)
-var is_ducking = false  # Indica si el personaje está actualmente agachado
-var landed_from_jump = false  # Indica si el personaje acaba de aterrizar de un salto o caída
+var stand_timer = 0.0
+var duck_timer = 0.0
+var was_in_air = false
+var is_ducking = false
+var landed_from_jump = false
+
+# Estado activo para disparos
+var is_active: bool = true
 
 # ==========================================
 # FUNCIONES PRINCIPALES
 # ==========================================
-var is_active: bool = true
 
-# Función principal del ciclo de físicas que se ejecuta cada frame
+func _ready():
+	cargar()  # Cargar la posición inicial
+	if Datos.has("position"):
+		global_position = Vector2(Datos["position"][0], Datos["position"][1])
+	print("Posición inicial:", global_position)
+
 func _physics_process(delta):
-	handle_input(delta)  # Manejar la entrada del usuario
-	update_state(delta)  # Actualizar el estado del personaje
-	apply_physics()  # Aplicar movimiento y física
+	handle_input(delta)
+	update_state(delta)
+	apply_physics()
+
+# ==========================================
+# GUARDADO Y CARGA DE DATOS
+# ==========================================
+
+# Guardar los datos en el archivo
+func guardar():
+	Datos["position"] = [global_position.x, global_position.y]
+	var archivo = FileAccess.open(ruta, FileAccess.WRITE)
+	archivo.store_var(Datos)
+	archivo = null
+	print("Guardado con éxito en:", ruta)
+
+# Cargar los datos del archivo
+func cargar():
+	if FileAccess.file_exists(ruta):
+		var archivo = FileAccess.open(ruta, FileAccess.READ)
+		Datos = archivo.get_var()
+		archivo = null
+		print("Datos cargados:", Datos)
+	else:
+		print("No se encontró archivo de guardado. Usando valores predeterminados.")
 
 # ==========================================
 # MANEJO DE LA ENTRADA
 # ==========================================
 
-# Función para manejar la entrada del usuario
 func handle_input(delta):
-	handle_movement()  # Manejar el movimiento horizontal
-	handle_jump()  # Manejar el salto
-	handle_manual_duck()  # Manejar el agachado manual
-	handle_shooting()  # Manejar el disparo
+	handle_movement()
+	handle_jump()
+	handle_manual_duck()
+	handle_shooting()
 
 # ==========================================
 # ACTUALIZACIÓN DEL ESTADO DEL PERSONAJE
 # ==========================================
 
-# Función para actualizar el estado del personaje
 func update_state(delta):
 	if is_on_floor():
-		update_idle_transition(delta)  # Controlar la transición a "idle" si está en el suelo
-	handle_landing(delta)  # Verificar y manejar el aterrizaje
+		update_idle_transition(delta)
+	handle_landing(delta)
 
-# Controla la transición de "stand" a "idle" si el personaje está quieto
 func update_idle_transition(delta):
 	if velocity.x == 0 and not is_ducking and not landed_from_jump:
 		stand_timer += delta
 		if stand_timer >= STAND_TO_IDLE_DELAY:
 			sprite.play("idle")
 	else:
-		stand_timer = 0.0  # Reiniciar el temporizador si hay actividad
+		stand_timer = 0.0
 
-# Controla el aterrizaje después de un salto o caída
 func handle_landing(delta):
 	if not is_on_floor() and velocity.y > 0:
 		sprite.play("fall")
@@ -81,12 +114,10 @@ func handle_landing(delta):
 # APLICACIÓN DE LA FÍSICA
 # ==========================================
 
-# Función para aplicar la física y el movimiento del personaje
 func apply_physics():
-	handle_gravity()  # Aplicar la gravedad si no está en el suelo
-	move_and_slide()  # Mover el personaje y aplicar la física de colisiones
+	handle_gravity()
+	move_and_slide()
 
-# Aplica la gravedad cuando el personaje está en el aire
 func handle_gravity():
 	if not is_on_floor():
 		velocity.y += ProjectSettings.get_setting("physics/2d/default_gravity") * get_physics_process_delta_time()
@@ -95,7 +126,6 @@ func handle_gravity():
 # MANEJO DE ACCIONES ESPECÍFICAS
 # ==========================================
 
-# Controla el movimiento horizontal del personaje
 func handle_movement():
 	var direction = Input.get_axis("ui_left", "ui_right")
 	if direction != 0 and not is_ducking and not landed_from_jump:
@@ -107,14 +137,12 @@ func handle_movement():
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
-# Verifica si el personaje debe saltar
 func handle_jump():
 	if Input.is_action_just_pressed("ui_up") and is_on_floor() and not is_ducking:
 		velocity.y = JUMP_VELOCITY
 		sprite.play("jump")
 		was_in_air = true
 
-# Maneja el agachado manual con la tecla hacia abajo
 func handle_manual_duck():
 	if Input.is_action_pressed("ui_down") and is_on_floor():
 		sprite.play("duck")
@@ -124,12 +152,10 @@ func handle_manual_duck():
 		sprite.play("stand")
 		stand_timer = 0.0
 
-# Función para manejar el disparo
 func handle_shooting():
 	if Input.is_action_just_pressed("ui_accept"):
 		disparar_bala()
 
-# Función para disparar una bala de hielo
 func disparar_bala():
 	if is_active == true:
 		var bala = HieloBalaScene1.instantiate()
@@ -155,24 +181,20 @@ func disparar_bala():
 # UTILIDADES Y FUNCIONES AUXILIARES
 # ==========================================
 
-# Reinicia todos los temporizadores y estados
 func reset_timers():
 	stand_timer = 0.0
 	duck_timer = 0.0
 	landed_from_jump = false
 	is_ducking = false
 
-
-
 func take_track():
 	iniciar_timer()
-	timer.timeout.connect(Callable(self, "_on_timeout"))
+	timer.timeout.connect(Callable(self, "_on_timer_timeout"))
 	is_active = false
 
 func _on_timer_timeout():
 	print("Power-up desactivado")
 	is_active = true
-
 
 func iniciar_timer():
 	timer.wait_time = 10
